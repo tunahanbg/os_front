@@ -391,9 +391,6 @@ function fillUserManagementPage(currentUser) {
     let userListHTML = `
         <div class="user-management-header">
             <h2>Kullanıcı Yönetimi</h2>
-            <button class="btn btn-primary" id="add-user-btn">
-                <i class="fas fa-plus"></i> Yeni Kullanıcı
-            </button>
         </div>
         <div class="user-table-container">
             <table class="user-table">
@@ -406,7 +403,6 @@ function fillUserManagementPage(currentUser) {
                         <th>Rol</th>
                         <th>Son Giriş</th>
                         <th>Durum</th>
-                        <th>İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -430,20 +426,7 @@ function fillUserManagementPage(currentUser) {
                         ${user.isActive ? "Aktif" : "Pasif"}
                     </span>
                 </td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="btn-icon edit-user" data-username="${
-                            user.username
-                        }" title="Düzenle">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-icon delete-user" data-username="${
-                            user.username
-                        }" title="Sil">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
+                
             </tr>
         `;
     });
@@ -455,26 +438,4 @@ function fillUserManagementPage(currentUser) {
     `;
 
     userListContainer.innerHTML = userListHTML;
-
-    // Event listeners for user management actions
-    document.querySelectorAll(".edit-user").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-            const username = e.currentTarget.dataset.username;
-            console.log("Edit user:", username);
-            // Edit user functionality will be implemented later
-        });
-    });
-
-    document.querySelectorAll(".delete-user").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-            const username = e.currentTarget.dataset.username;
-            console.log("Delete user:", username);
-            // Delete user functionality will be implemented later
-        });
-    });
-
-    document.getElementById("add-user-btn")?.addEventListener("click", () => {
-        console.log("Add new user");
-        // Add user functionality will be implemented later
-    });
 }
