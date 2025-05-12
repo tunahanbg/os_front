@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="tr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TechBit - Profil</title>
+        <link rel="stylesheet" href="css/style.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        />
+    </head>
+    <body>
+        <div class="dashboard">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h1>TechBit</h1>
+                </div>
+                <div class="sidebar-menu">
+                    <ul>
+                        <li
+                            data-menu="dashboard"
+                            data-access="admin,devops,developer,documentation"
+                        >
+                            <a href="index.html"
+                                ><i class="fas fa-th-large"></i> Dashboard</a
+                            >
+                        </li>
+                        <li
+                            data-menu="software-development"
+                            data-access="admin,devops,developer"
+                        >
+                            <a
+                                href="#"
+                                class="filter-btn"
+                                data-filter="software-development"
+                            >
+                                <i class="fas fa-code"></i> Yazılım Geliştirme
+                            </a>
+                        </li>
+                        <li data-menu="system-config" data-access="admin">
+                            <a
+                                href="#"
+                                class="filter-btn"
+                                data-filter="system-config"
+                            >
+                                <i class="fas fa-cogs"></i> Sistem Yapılandırma
+                            </a>
+                        </li>
+                        <li data-menu="user-management" data-access="admin">
+                            <a href="user-management.html"
+                                ><i class="fas fa-users"></i> Kullanıcı
+                                Yönetimi</a
+                            >
+                        </li>
+                        <li
+                            data-menu="documentation"
+                            data-access="admin,devops,developer,documentation"
+                        >
+                            <a
+                                href="#"
+                                class="filter-btn"
+                                data-filter="documentation"
+                            >
+                                <i class="fas fa-book"></i> Dokümantasyon
+                            </a>
+                        </li>
+                        <li data-menu="monitoring" data-access="admin,devops">
+                            <a
+                                href="#"
+                                class="filter-btn"
+                                data-filter="monitoring"
+                            >
+                                <i class="fas fa-chart-line"></i> İzleme
+                            </a>
+                        </li>
+                        <li
+                            class="active"
+                            data-menu="profile"
+                            data-access="admin,devops,developer,documentation"
+                        >
+                            <a href="profile.html"
+                                ><i class="fas fa-user-circle"></i> Profil</a
+                            >
+                        </li>
+                        <li
+                            data-menu="logout"
+                            data-access="admin,devops,developer,documentation"
+                        >
+                            <a href="#" id="logout-button"
+                                ><i class="fas fa-sign-out-alt"></i> Çıkış</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <header>
+                    <div class="toggle-sidebar">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    <div class="header-right">
+                        <div class="user-info">
+                            <div class="user-img">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="user-data">
+                                <span class="user-name">Kullanıcı</span>
+                                <span class="user-role">Rol</span>
+                            </div>
+                        </div>
+                        <button
+                            class="header-logout-btn"
+                            id="header-logout-button"
+                            title="Çıkış Yap"
+                        >
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </header>
+
+                <main>
+                    <div class="page-header">
+                        <h2>Profil Bilgileri</h2>
+                        <p>Kişisel bilgilerinizi görüntüleyin ve düzenleyin</p>
+                    </div>
+
+                    <div class="profile-content">
+                        <div class="profile-card">
+                            <div class="profile-header">
+                                <div class="profile-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <div class="profile-title">
+                                    <h3 id="profile-name">Kullanıcı Adı</h3>
+                                    <span id="profile-role">Rol</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-details">
+                                <div class="detail-item">
+                                    <div class="detail-label">
+                                        Kullanıcı Adı:
+                                    </div>
+                                    <div
+                                        class="detail-value"
+                                        id="profile-username"
+                                    >
+                                        kullanici
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">E-posta:</div>
+                                    <div
+                                        class="detail-value"
+                                        id="profile-email"
+                                    >
+                                        kullanici@techbit.com
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Departman:</div>
+                                    <div
+                                        class="detail-value"
+                                        id="profile-department"
+                                    >
+                                        Teknoloji
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Son Giriş:</div>
+                                    <div
+                                        class="detail-value"
+                                        id="profile-last-login"
+                                    >
+                                        2025-05-06 14:30
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="profile-actions">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-key"></i> Şifre Değiştir
+                                </button>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-edit"></i> Profili Düzenle
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="profile-card">
+                            <h3>Erişim Yetkileri</h3>
+                            <div
+                                class="access-permissions"
+                                id="access-permissions"
+                            >
+                                <!-- Bu alan JavaScript ile doldurulacak -->
+                            </div>
+                        </div>
+                    </div>
+                </main>
+
+                <footer>
+                    <p>&copy; 2025 TechBit - Tüm Hakları Saklıdır</p>
+                </footer>
+            </div>
+        </div>
+
+        <script src="js/dashboard.js"></script>
+        <script src="js/profile.js"></script>
+    </body>
+</html>

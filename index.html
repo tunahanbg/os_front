@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="tr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TechBit Yönetim Paneli</title>
+        <link rel="stylesheet" href="css/style.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        />
+    </head>
+    <body>
+        <div class="dashboard">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h1>TechBit</h1>
+                </div>
+                <div class="sidebar-menu">
+                    <ul>
+                        <li
+                            class="active"
+                            data-menu="dashboard"
+                            data-access="admin,devops,developer,documentation"
+                        >
+                            <a href="index.html"
+                                ><i class="fas fa-th-large"></i> Dashboard</a
+                            >
+                        </li>
+                        <li
+                            data-menu="software-development"
+                            data-access="admin,devops,developer"
+                        >
+                            <a
+                                href="#"
+                                class="filter-btn"
+                                data-filter="software-development"
+                            >
+                                <i class="fas fa-code"></i> Yazılım Geliştirme
+                            </a>
+                        </li>
+                        <li data-menu="system-config" data-access="admin">
+                            <a
+                                href="#"
+                                class="filter-btn"
+                                data-filter="system-config"
+                            >
+                                <i class="fas fa-cogs"></i> Sistem Yapılandırma
+                            </a>
+                        </li>
+                        <li data-menu="user-management" data-access="admin">
+                            <a href="user-management.html"
+                                ><i class="fas fa-users"></i> Kullanıcı
+                                Yönetimi</a
+                            >
+                        </li>
+                        <li
+                            data-menu="documentation"
+                            data-access="admin,devops,developer,documentation"
+                        >
+                            <a
+                                href="#"
+                                class="filter-btn"
+                                data-filter="documentation"
+                            >
+                                <i class="fas fa-book"></i> Dokümantasyon
+                            </a>
+                        </li>
+                        <li data-menu="monitoring" data-access="admin,devops">
+                            <a
+                                href="#"
+                                class="filter-btn"
+                                data-filter="monitoring"
+                            >
+                                <i class="fas fa-chart-line"></i> İzleme
+                            </a>
+                        </li>
+                        <li
+                            data-menu="profile"
+                            data-access="admin,devops,developer,documentation"
+                        >
+                            <a href="profile.html"
+                                ><i class="fas fa-user-circle"></i> Profil</a
+                            >
+                        </li>
+                        <li
+                            data-menu="logout"
+                            data-access="admin,devops,developer,documentation"
+                        >
+                            <a href="#" id="logout-button"
+                                ><i class="fas fa-sign-out-alt"></i> Çıkış</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <header>
+                    <div class="toggle-sidebar">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    <div class="header-right">
+                        <div class="user-info">
+                            <div class="user-img">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="user-data">
+                                <span class="user-name">Kullanıcı</span>
+                                <span class="user-role">Rol</span>
+                            </div>
+                        </div>
+                        <button
+                            class="header-logout-btn"
+                            id="header-logout-button"
+                            title="Çıkış Yap"
+                        >
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </header>
+
+                <main>
+                    <div class="page-header">
+                        <h2>Dashboard</h2>
+                        <p>
+                            Hoş geldiniz, servislerinize buradan erişebilirsiniz
+                        </p>
+                    </div>
+
+                    <div class="services-grid">
+                        <!-- GitLab -->
+                        <a
+                            href="#"
+                            class="service-card"
+                            data-access="admin,devops,developer"
+                            data-category="software-development"
+                        >
+                            <div class="service-icon">
+                                <i class="fab fa-gitlab"></i>
+                            </div>
+                            <div class="service-info">
+                                <h3>GitLab</h3>
+                                <p>Kod Yönetimi & CI/CD</p>
+                                <div class="access-badge admin">Tam Erişim</div>
+                                <div class="access-badge devops">
+                                    Tam Erişim
+                                </div>
+                                <div class="access-badge developer">
+                                    Sınırlı Erişim
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- DokuWiki -->
+                        <a
+                            href="/wiki"
+                            class="service-card"
+                            data-access="admin,devops,developer,documentation"
+                            data-category="documentation"
+                        >
+                            <div class="service-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="service-info">
+                                <h3>DokuWiki</h3>
+                                <p>Dokümantasyon Platformu</p>
+                                <div class="access-badge admin">Tam Erişim</div>
+                                <div class="access-badge devops">
+                                    Salt Okuma
+                                </div>
+                                <div class="access-badge developer">
+                                    Okuma/Yazma
+                                </div>
+                                <div class="access-badge documentation">
+                                    Tam Erişim
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Nagios -->
+                        <a
+                            href="/nagios"
+                            class="service-card"
+                            data-access="admin,devops"
+                            data-category="monitoring"
+                        >
+                            <div class="service-icon">
+                                <i class="fas fa-heartbeat"></i>
+                            </div>
+                            <div class="service-info">
+                                <h3>Nagios</h3>
+                                <p>Sistem ve Ağ İzleme</p>
+                                <div class="access-badge admin">Tam Erişim</div>
+                                <div class="access-badge devops">
+                                    Salt Okuma
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Munin -->
+                        <a
+                            href="/munin"
+                            class="service-card"
+                            data-access="admin,devops"
+                            data-category="monitoring"
+                        >
+                            <div class="service-icon">
+                                <i class="fas fa-chart-area"></i>
+                            </div>
+                            <div class="service-info">
+                                <h3>Munin</h3>
+                                <p>Kaynak Kullanımı İzleme</p>
+                                <div class="access-badge admin">Tam Erişim</div>
+                                <div class="access-badge devops">
+                                    Salt Okuma
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- LDAP -->
+                        <a
+                            href="/ldap"
+                            class="service-card"
+                            data-access="admin"
+                            data-category="system-config"
+                        >
+                            <div class="service-icon">
+                                <i class="fas fa-id-card"></i>
+                            </div>
+                            <div class="service-info">
+                                <h3>LDAP</h3>
+                                <p>Kullanıcı Yönetimi</p>
+                                <div class="access-badge admin">Tam Erişim</div>
+                            </div>
+                        </a>
+
+                        <!-- Email -->
+                        <a
+                            href="/mail"
+                            class="service-card"
+                            data-access="admin"
+                            data-category="system-config"
+                        >
+                            <div class="service-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="service-info">
+                                <h3>Email</h3>
+                                <p>Postfix & Dovecot</p>
+                                <div class="access-badge admin">Tam Erişim</div>
+                            </div>
+                        </a>
+
+                        <!-- PostgreSQL -->
+                        <a
+                            href="#"
+                            class="service-card"
+                            data-access="admin,devops,developer"
+                            data-category="software-development"
+                        >
+                            <div class="service-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="service-info">
+                                <h3>PostgreSQL</h3>
+                                <p>Veritabanı Yönetim Sistemi</p>
+                                <div class="access-badge admin">Tam Erişim</div>
+                                <div class="access-badge devops">
+                                    Tam Erişim
+                                </div>
+                                <div class="access-badge developer">
+                                    Sınırlı Erişim
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Etherpad -->
+                        <a
+                            href="/etherpad"
+                            class="service-card"
+                            data-access="admin,developer,documentation"
+                            data-category="documentation"
+                        >
+                            <div class="service-icon">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="service-info">
+                                <h3>Etherpad Lite</h3>
+                                <p>İşbirlikçi Metin Editörü</p>
+                                <div class="access-badge admin">Tam Erişim</div>
+                                <div class="access-badge developer">
+                                    Tam Erişim
+                                </div>
+                                <div class="access-badge documentation">
+                                    Tam Erişim
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </main>
+
+                <footer>
+                    <p>&copy; 2025 TechBit - Tüm Hakları Saklıdır</p>
+                </footer>
+            </div>
+        </div>
+
+        <script src="js/dashboard.js"></script>
+    </body>
+</html>

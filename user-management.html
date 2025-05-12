@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="tr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TechBit - Kullanıcı Yönetimi</title>
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/user-management.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        />
+    </head>
+    <body>
+        <div class="dashboard">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h1>TechBit</h1>
+                </div>
+                <div class="sidebar-menu">
+                    <ul>
+                        <li
+                            data-menu="dashboard"
+                            data-access="admin,devops,developer,documentation"
+                        >
+                            <a href="index.html"
+                                ><i class="fas fa-th-large"></i> Dashboard</a
+                            >
+                        </li>
+                        <li
+                            data-menu="software-development"
+                            data-access="admin,devops,developer"
+                        >
+                            <a
+                                href="#"
+                                class="filter-btn"
+                                data-filter="software-development"
+                            >
+                                <i class="fas fa-code"></i> Yazılım Geliştirme
+                            </a>
+                        </li>
+                        <li data-menu="system-config" data-access="admin">
+                            <a
+                                href="#"
+                                class="filter-btn"
+                                data-filter="system-config"
+                            >
+                                <i class="fas fa-cogs"></i> Sistem Yapılandırma
+                            </a>
+                        </li>
+                        <li
+                            class="active"
+                            data-menu="user-management"
+                            data-access="admin"
+                        >
+                            <a href="user-management.html"
+                                ><i class="fas fa-users"></i> Kullanıcı
+                                Yönetimi</a
+                            >
+                        </li>
+                        <li
+                            data-menu="documentation"
+                            data-access="admin,devops,developer,documentation"
+                        >
+                            <a
+                                href="#"
+                                class="filter-btn"
+                                data-filter="documentation"
+                            >
+                                <i class="fas fa-book"></i> Dokümantasyon
+                            </a>
+                        </li>
+                        <li data-menu="monitoring" data-access="admin,devops">
+                            <a
+                                href="#"
+                                class="filter-btn"
+                                data-filter="monitoring"
+                            >
+                                <i class="fas fa-chart-line"></i> İzleme
+                            </a>
+                        </li>
+                        <li
+                            data-menu="profile"
+                            data-access="admin,devops,developer,documentation"
+                        >
+                            <a href="profile.html"
+                                ><i class="fas fa-user-circle"></i> Profil</a
+                            >
+                        </li>
+                        <li
+                            data-menu="logout"
+                            data-access="admin,devops,developer,documentation"
+                        >
+                            <a href="#" id="logout-button"
+                                ><i class="fas fa-sign-out-alt"></i> Çıkış</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <header>
+                    <div class="toggle-sidebar">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    <div class="header-right">
+                        <div class="user-info">
+                            <div class="user-img">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="user-data">
+                                <span class="user-name">Kullanıcı</span>
+                                <span class="user-role">Rol</span>
+                            </div>
+                        </div>
+                        <button
+                            class="header-logout-btn"
+                            id="header-logout-button"
+                            title="Çıkış Yap"
+                        >
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </header>
+
+                <main>
+                    <div class="user-list">
+                        <!-- User list will be populated by JavaScript -->
+                    </div>
+                </main>
+
+                <footer>
+                    <p>&copy; 2025 TechBit - Tüm Hakları Saklıdır</p>
+                </footer>
+            </div>
+        </div>
+
+        <script src="js/dashboard.js"></script>
+    </body>
+</html>
