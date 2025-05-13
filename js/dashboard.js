@@ -30,23 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
         setInitialState();
     });
 
-    // Click outside handler for mobile
-    document.addEventListener("click", function (e) {
-        if (window.innerWidth <= 992) {
-            const isClickInsideSidebar = sidebar.contains(e.target);
-            const isClickOnToggle = toggleBtn.contains(e.target);
-
-            if (
-                !isClickInsideSidebar &&
-                !isClickOnToggle &&
-                sidebar.classList.contains("active")
-            ) {
-                sidebar.classList.remove("active");
-                mainContent.classList.remove("full-width");
-            }
-        }
-    });
-
     // Çıkış butonlarını dinle
     const logoutButtons = document.querySelectorAll(
         "#logout-button, #header-logout-button"
@@ -167,12 +150,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function showAllCards() {
-        serviceCards.forEach((card) => {
-            card.style.display = "flex";
-        });
-    }
-
     function updateActiveMenuItem(clickedLink) {
         // Remove active class from all menu items
         document.querySelectorAll(".sidebar-menu li").forEach((item) => {
@@ -184,78 +161,38 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// Test kullanıcıları
-const testUsers = [
-    {
-        username: "admin.user",
-        displayName: "Admin User",
-        role: "admin",
-        email: "admin.user@techbit.com",
-        department: "IT Yönetimi",
-        lastLogin: "2025-05-06 10:15",
-        isActive: true,
-    },
-    {
-        username: "devops.user",
-        displayName: "DevOps User",
-        role: "devops",
-        email: "devops.user@techbit.com",
-        department: "DevOps Ekibi",
-        lastLogin: "2025-05-06 09:30",
-        isActive: true,
-    },
-    {
-        username: "developer.user",
-        displayName: "Developer User",
-        role: "developer",
-        email: "developer.user@techbit.com",
-        department: "Yazılım Geliştirme",
-        lastLogin: "2025-05-06 11:45",
-        isActive: true,
-    },
-    {
-        username: "doc.user",
-        displayName: "Documentation User",
-        role: "documentation",
-        email: "doc.user@techbit.com",
-        department: "Teknik Dokümantasyon",
-        lastLogin: "2025-05-06 08:20",
-        isActive: true,
-    },
-];
-
 // Kullanıcı oturumu kontrolü
 function checkUserSession() {
-    // Gerçek uygulamada oturum bilgisi sessionStorage'dan alınacak
-    // Burada test amaçlı sabit bir kullanıcı tanımlıyoruz
-    // Bu kısım LDAP entegrasyonu ile değiştirilecek
-
-    // Test için admin kullanıcısını varsayılan olarak kullan
-    const user = testUsers[0]; // Documentation user
-
-    if (user) {
-        // Store the current user globally
-        window.currentUser = user;
-
-        // Kullanıcı girişi var, UI'ı güncelle
-        updateUIWithUserInfo(user);
-        updateSidebarForRole(user.role);
-        updateServiceCardsForRole(user.role);
-
-        // Eğer profil sayfasındaysak, profil bilgilerini doldur
-        if (window.location.pathname.includes("profile.html")) {
-            fillProfilePage(user);
-        }
-
-        // Eğer kullanıcı yönetimi sayfasındaysak, kullanıcı listesini doldur
-        if (window.location.pathname.includes("user-management.html")) {
-            fillUserManagementPage(user);
-        }
-    } else {
+    // Session storage'dan kullanıcı bilgilerini al
+    const userJSON = sessionStorage.getItem('user');
+    
+    if (!userJSON) {
         // Kullanıcı girişi yok, login sayfasına yönlendir
-        console.log(
-            "Kullanıcı oturumu bulunamadı, giriş sayfasına yönlendirilecek."
-        );
+        if (!window.location.pathname.includes("login.html")) {
+            window.location.href = "/login.html";
+        }
+        return;
+    }
+    
+    // Kullanıcı bilgilerini parse et
+    const user = JSON.parse(userJSON);
+    
+    // Store the current user globally
+    window.currentUser = user;
+    
+    // Kullanıcı girişi var, UI'ı güncelle
+    updateUIWithUserInfo(user);
+    updateSidebarForRole(user.role);
+    updateServiceCardsForRole(user.role);
+    
+    // Eğer profil sayfasındaysak, profil bilgilerini doldur
+    if (window.location.pathname.includes("profile.html")) {
+        fillProfilePage(user);
+    }
+    
+    // Eğer kullanıcı yönetimi sayfasındaysak, kullanıcı listesini doldur
+    if (window.location.pathname.includes("user-management.html")) {
+        fillUserManagementPage(user);
     }
 }
 
@@ -265,7 +202,7 @@ function updateUIWithUserInfo(user) {
     const userRoleEl = document.querySelector(".user-role");
 
     if (userNameEl) userNameEl.textContent = user.displayName;
-    if (userRoleEl) userRoleEl.textContent = getRoleName(user.role);
+    if (userRoleEl) userRoleEl.textContent = user.roleName || getRoleName(user.role);
 }
 
 // Sidebar'ı kullanıcı rolüne göre güncelle
@@ -325,39 +262,57 @@ function getRoleName(roleCode) {
 // LDAP ile oturum açma işlemi
 async function loginWithLDAP(username, password) {
     try {
-        // Backend API'ye istek gönder
-        // Gerçek uygulamada:
-        /*
-        const response = await fetch('/api/auth/login', {
-            method: 'POST',
+        // Basic Auth ile kimlik doğrulama
+        const credentials = btoa(`${username}:${password}`);
+        
+        const response = await fetch('/auth-check', {
+            method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
+                'Authorization': `Basic ${credentials}`
+            }
         });
         
-        const data = await response.json();
-        */
-
-        // Test amaçlı sabit bir yanıt:
-        const data = {
-            success: true,
-            user: {
+        if (response.ok) {
+            // Kullanıcı kimlik bilgilerini al
+            const data = await response.json();
+            const gidNumber = response.headers.get('X-User-GID');
+            
+            // Kullanıcı rolünü belirle
+            let userRole = 'user';
+            let roleName = 'Kullanıcı';
+            
+            // GID numarasına göre rol ataması
+            if (gidNumber === '500') {
+                userRole = 'admin';
+                roleName = 'Yönetici';
+            } else if (gidNumber === '501') {
+                userRole = 'devops';
+                roleName = 'DevOps';
+            } else if (gidNumber === '502') {
+                userRole = 'developer';
+                roleName = 'Geliştirici';
+            } else if (gidNumber === '503') {
+                userRole = 'documentation';
+                roleName = 'Dokümantasyon';
+            }
+            
+            // Kullanıcı bilgilerini oluştur
+            const userData = {
                 username: username,
-                displayName: "Test Kullanıcı",
-                role: "admin",
+                displayName: username.charAt(0).toUpperCase() + username.slice(1),
+                role: userRole,
+                roleName: roleName,
                 email: `${username}@techbit.com`,
-                department: "IT Departmanı",
-                lastLogin: new Date().toLocaleString(),
-            },
-        };
-
-        if (data.success) {
-            // Başarılı oturum açma
-            sessionStorage.setItem("user", JSON.stringify(data.user));
+                department: 'IT Departmanı',
+                lastLogin: new Date().toLocaleString()
+            };
+            
+            // Kullanıcı bilgilerini sakla
+            sessionStorage.setItem('user', JSON.stringify(userData));
+            sessionStorage.setItem('authHeader', `Basic ${credentials}`);
+            
             return true;
         } else {
-            // Hata durumunda
             console.error("Oturum açma başarısız");
             return false;
         }
@@ -371,6 +326,7 @@ async function loginWithLDAP(username, password) {
 function logout() {
     // Session bilgilerini temizle
     sessionStorage.removeItem("user");
+    sessionStorage.removeItem("authHeader");
 
     // Login sayfasına yönlendir
     window.location.href = "/login.html";
@@ -388,54 +344,70 @@ function fillUserManagementPage(currentUser) {
         return;
     }
 
-    let userListHTML = `
-        <div class="user-management-header">
-            <h2>Kullanıcı Yönetimi</h2>
-        </div>
-        <div class="user-table-container">
-            <table class="user-table">
-                <thead>
+    // LDAP kullanıcılarını almak için istek gönder
+    fetch('/auth-check', {
+        method: 'GET',
+        headers: {
+            'Authorization': sessionStorage.getItem('authHeader')
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Kullanıcı listesini oluştur - gerçek uygulamada burası
+            // LDAP'tan alınan kullanıcı listesi ile doldurulacak
+            let userListHTML = `
+                <div class="user-management-header">
+                    <h2>Kullanıcı Yönetimi</h2>
+                </div>
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Kullanıcı Adı</th>
+                                <th>Ad Soyad</th>
+                                <th>E-posta</th>
+                                <th>Rol</th>
+                                <th>GID</th>
+                                <th>Son Giriş</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            // Hardcoded kullanıcı listesi - LDAP ile entegre edilecek
+            const ldapUsers = [
+                { username: "yaltay", displayName: "Yavuz Altay", email: "yaltay@techbit.com", role: "admin", gid: "500", lastLogin: "2025-05-13 10:15" },
+                { username: "tbuyukgebiz", displayName: "Tunahan Buyukgebiz", email: "tbuyukgebiz@techbit.com", role: "devops", gid: "501", lastLogin: "2025-05-13 09:30" },
+                { username: "ngok", displayName: "Necat Gok", email: "ngok@techbit.com", role: "developer", gid: "502", lastLogin: "2025-05-13 11:45" },
+                { username: "egenc", displayName: "Emre Genc", email: "egenc@techbit.com", role: "documentation", gid: "503", lastLogin: "2025-05-13 08:20" }
+            ];
+
+            ldapUsers.forEach((user) => {
+                userListHTML += `
                     <tr>
-                        <th>Kullanıcı Adı</th>
-                        <th>Ad Soyad</th>
-                        <th>E-posta</th>
-                        <th>Departman</th>
-                        <th>Rol</th>
-                        <th>Son Giriş</th>
-                        <th>Durum</th>
+                        <td>${user.username}</td>
+                        <td>${user.displayName}</td>
+                        <td>${user.email}</td>
+                        <td><span class="role-badge ${user.role}">${getRoleName(user.role)}</span></td>
+                        <td>${user.gid}</td>
+                        <td>${user.lastLogin}</td>
                     </tr>
-                </thead>
-                <tbody>
-    `;
+                `;
+            });
 
-    testUsers.forEach((user) => {
-        userListHTML += `
-            <tr>
-                <td>${user.username}</td>
-                <td>${user.displayName}</td>
-                <td>${user.email}</td>
-                <td>${user.department}</td>
-                <td><span class="role-badge ${user.role}">${getRoleName(
-            user.role
-        )}</span></td>
-                <td>${user.lastLogin}</td>
-                <td>
-                    <span class="status-badge ${
-                        user.isActive ? "active" : "inactive"
-                    }">
-                        ${user.isActive ? "Aktif" : "Pasif"}
-                    </span>
-                </td>
-                
-            </tr>
-        `;
+            userListHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            userListContainer.innerHTML = userListHTML;
+        } else {
+            userListContainer.innerHTML = '<div class="error-message">Kullanıcı listesi alınamadı. Yetki hatası.</div>';
+        }
+    })
+    .catch(error => {
+        console.error('Kullanıcı listesi alınamadı:', error);
+        userListContainer.innerHTML = '<div class="error-message">Kullanıcı listesi alınamadı. Bir hata oluştu.</div>';
     });
-
-    userListHTML += `
-                </tbody>
-            </table>
-        </div>
-    `;
-
-    userListContainer.innerHTML = userListHTML;
 }
