@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  # PostgreSQL veritabanı
+  postgres:
+    image: postgres:14
+    container_name: techbit_postgres
+    environment:
+      POSTGRES_USER: techbit
+      POSTGRES_PASSWORD: techbit123
+      POSTGRES_DB: techbit_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  # Web uygulaması
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: techbit_webapp
+    environment:
+      - PORT=3000
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=techbit
+      - POSTGRES_PASSWORD=techbit123
+      - POSTGRES_DB=techbit_db
+      - POSTGRES_PORT=5432
+      - JWT_SECRET=techbit-secret-key
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
