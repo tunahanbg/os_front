@@ -202,7 +202,7 @@ function updateUIWithUserInfo(user) {
     const userRoleEl = document.querySelector(".user-role");
 
     if (userNameEl) userNameEl.textContent = user.displayName;
-    if (userRoleEl) userRoleEl.textContent = user.roleName || getRoleName(user.role);
+    if (userRoleEl) userRoleEl.textContent = user.roleName || window.dbModule.getRoleName(user.role);
 }
 
 // Sidebar'ı kullanıcı rolüne göre güncelle
@@ -248,85 +248,11 @@ function updateServiceCardsForRole(userRole) {
     });
 }
 
-// Rol adını Türkçe olarak döndür
-function getRoleName(roleCode) {
-    const roleNames = {
-        admin: "Yönetici",
-        devops: "DevOps",
-        developer: "Geliştirici",
-        documentation: "Dokümantasyon",
-    };
-    return roleNames[roleCode] || roleCode;
-}
-
-// LDAP ile oturum açma işlemi
-async function loginWithLDAP(username, password) {
-    try {
-        // Basic Auth ile kimlik doğrulama
-        const credentials = btoa(`${username}:${password}`);
-        
-        const response = await fetch('/auth-check', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Basic ${credentials}`
-            }
-        });
-        
-        if (response.ok) {
-            // Kullanıcı kimlik bilgilerini al
-            const data = await response.json();
-            const gidNumber = response.headers.get('X-User-GID');
-            
-            // Kullanıcı rolünü belirle
-            let userRole = 'user';
-            let roleName = 'Kullanıcı';
-            
-            // GID numarasına göre rol ataması
-            if (gidNumber === '500') {
-                userRole = 'admin';
-                roleName = 'Yönetici';
-            } else if (gidNumber === '501') {
-                userRole = 'devops';
-                roleName = 'DevOps';
-            } else if (gidNumber === '502') {
-                userRole = 'developer';
-                roleName = 'Geliştirici';
-            } else if (gidNumber === '503') {
-                userRole = 'documentation';
-                roleName = 'Dokümantasyon';
-            }
-            
-            // Kullanıcı bilgilerini oluştur
-            const userData = {
-                username: username,
-                displayName: username.charAt(0).toUpperCase() + username.slice(1),
-                role: userRole,
-                roleName: roleName,
-                email: `${username}@techbit.com`,
-                department: 'IT Departmanı',
-                lastLogin: new Date().toLocaleString()
-            };
-            
-            // Kullanıcı bilgilerini sakla
-            sessionStorage.setItem('user', JSON.stringify(userData));
-            sessionStorage.setItem('authHeader', `Basic ${credentials}`);
-            
-            return true;
-        } else {
-            console.error("Oturum açma başarısız");
-            return false;
-        }
-    } catch (error) {
-        console.error("Oturum açma hatası:", error);
-        return false;
-    }
-}
-
 // Oturumu kapat
 function logout() {
     // Session bilgilerini temizle
     sessionStorage.removeItem("user");
-    sessionStorage.removeItem("authHeader");
+    sessionStorage.removeItem("token");
 
     // Login sayfasına yönlendir
     window.location.href = "/login.html";
@@ -344,17 +270,9 @@ function fillUserManagementPage(currentUser) {
         return;
     }
 
-    // LDAP kullanıcılarını almak için istek gönder
-    fetch('/auth-check', {
-        method: 'GET',
-        headers: {
-            'Authorization': sessionStorage.getItem('authHeader')
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            // Kullanıcı listesini oluştur - gerçek uygulamada burası
-            // LDAP'tan alınan kullanıcı listesi ile doldurulacak
+    // PostgreSQL'den kullanıcıları getir
+    window.dbModule.getUsers().then(result => {
+        if (result.success && result.users) {
             let userListHTML = `
                 <div class="user-management-header">
                     <h2>Kullanıcı Yönetimi</h2>
@@ -367,30 +285,20 @@ function fillUserManagementPage(currentUser) {
                                 <th>Ad Soyad</th>
                                 <th>E-posta</th>
                                 <th>Rol</th>
-                                <th>GID</th>
                                 <th>Son Giriş</th>
                             </tr>
                         </thead>
                         <tbody>
             `;
 
-            // Hardcoded kullanıcı listesi - LDAP ile entegre edilecek
-            const ldapUsers = [
-                { username: "yaltay", displayName: "Yavuz Altay", email: "yaltay@techbit.com", role: "admin", gid: "500", lastLogin: "2025-05-13 10:15" },
-                { username: "tbuyukgebiz", displayName: "Tunahan Buyukgebiz", email: "tbuyukgebiz@techbit.com", role: "devops", gid: "501", lastLogin: "2025-05-13 09:30" },
-                { username: "ngok", displayName: "Necat Gok", email: "ngok@techbit.com", role: "developer", gid: "502", lastLogin: "2025-05-13 11:45" },
-                { username: "egenc", displayName: "Emre Genc", email: "egenc@techbit.com", role: "documentation", gid: "503", lastLogin: "2025-05-13 08:20" }
-            ];
-
-            ldapUsers.forEach((user) => {
+            result.users.forEach((user) => {
                 userListHTML += `
                     <tr>
                         <td>${user.username}</td>
-                        <td>${user.displayName}</td>
-                        <td>${user.email}</td>
-                        <td><span class="role-badge ${user.role}">${getRoleName(user.role)}</span></td>
-                        <td>${user.gid}</td>
-                        <td>${user.lastLogin}</td>
+                        <td>${user.display_name || user.username}</td>
+                        <td>${user.email || `${user.username}@techbit.com`}</td>
+                        <td><span class="role-badge ${user.role}">${window.dbModule.getRoleName(user.role)}</span></td>
+                        <td>${user.last_login || 'Henüz giriş yapılmadı'}</td>
                     </tr>
                 `;
             });
@@ -403,10 +311,9 @@ function fillUserManagementPage(currentUser) {
 
             userListContainer.innerHTML = userListHTML;
         } else {
-            userListContainer.innerHTML = '<div class="error-message">Kullanıcı listesi alınamadı. Yetki hatası.</div>';
+            userListContainer.innerHTML = `<div class="error-message">${result.message || 'Kullanıcı listesi alınamadı.'}</div>`;
         }
-    })
-    .catch(error => {
+    }).catch(error => {
         console.error('Kullanıcı listesi alınamadı:', error);
         userListContainer.innerHTML = '<div class="error-message">Kullanıcı listesi alınamadı. Bir hata oluştu.</div>';
     });

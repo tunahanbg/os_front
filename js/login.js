@@ -17,72 +17,21 @@ document.addEventListener('DOMContentLoaded', function() {
         messageEl.textContent = 'Giriş yapılıyor...';
         messageEl.style.color = '#3498db';
         
-        try {
-            // Basic Auth ile kimlik doğrulama için base64 kodlaması
-            const credentials = btoa(`${username}:${password}`);
+        // PostgreSQL ile giriş yap
+        const result = await window.dbModule.loginWithPostgres(username, password);
+        
+        if (result.success) {
+            // Başarılı giriş mesajı
+            messageEl.textContent = 'Giriş başarılı! Yönlendiriliyorsunuz...';
+            messageEl.style.color = '#2ecc71';
             
-            const response = await fetch('/auth-check', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Basic ${credentials}`
-                }
-            });
-            
-            if (response.ok) {
-                // Kullanıcı kimlik bilgilerini al
-                const data = await response.json();
-                const gidNumber = response.headers.get('X-User-GID');
-                
-                // Kullanıcı rolünü belirle
-                let userRole = 'user';
-                let roleName = 'Kullanıcı';
-                
-                // GID numarasına göre rol ataması
-                if (gidNumber === '500') {
-                    userRole = 'admin';
-                    roleName = 'Yönetici';
-                } else if (gidNumber === '501') {
-                    userRole = 'devops';
-                    roleName = 'DevOps';
-                } else if (gidNumber === '502') {
-                    userRole = 'developer';
-                    roleName = 'Geliştirici';
-                } else if (gidNumber === '503') {
-                    userRole = 'documentation';
-                    roleName = 'Dokümantasyon';
-                }
-                
-                // Kullanıcı bilgilerini oluştur
-                const userData = {
-                    username: username,
-                    displayName: username.charAt(0).toUpperCase() + username.slice(1),
-                    role: userRole,
-                    roleName: roleName,
-                    email: `${username}@techbit.com`,
-                    department: 'IT Departmanı',
-                    lastLogin: new Date().toLocaleString()
-                };
-                
-                // Kullanıcı bilgilerini sakla
-                sessionStorage.setItem('user', JSON.stringify(userData));
-                sessionStorage.setItem('authHeader', `Basic ${credentials}`);
-                
-                // Başarılı giriş mesajı
-                messageEl.textContent = 'Giriş başarılı! Yönlendiriliyorsunuz...';
-                messageEl.style.color = '#2ecc71';
-                
-                // Ana sayfaya yönlendir
-                setTimeout(() => {
-                    window.location.href = '/index.html';
-                }, 1000);
-            } else {
-                // Başarısız giriş durumunda
-                messageEl.textContent = 'Kullanıcı adı veya şifre hatalı';
-                messageEl.style.color = '#e74c3c';
-            }
-        } catch (error) {
-            console.error('Giriş hatası:', error);
-            messageEl.textContent = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+            // Ana sayfaya yönlendir
+            setTimeout(() => {
+                window.location.href = '/index.html';
+            }, 1000);
+        } else {
+            // Başarısız giriş durumunda
+            messageEl.textContent = result.message || 'Kullanıcı adı veya şifre hatalı';
             messageEl.style.color = '#e74c3c';
         }
     });
