@@ -30,6 +30,8 @@ function fillAccessPermissions(role) {
         { name: 'PostgreSQL', admin: 'full', devops: 'full', developer: 'limited', documentation: 'none' },
         { name: 'Etherpad', admin: 'full', devops: 'none', developer: 'full', documentation: 'full' },
         { name: 'Docker', admin: 'full', devops: 'full', developer: 'none', documentation: 'none' },
+        { name: 'Elastic', admin: 'full', devops: 'full', developer: 'none', documentation: 'full' },
+        { name: 'Portainer', admin: 'full', devops: 'full', developer: 'full', documentation: 'none' },
         { name: 'Ansible', admin: 'full', devops: 'full', developer: 'none', documentation: 'none' }
     ];
     
